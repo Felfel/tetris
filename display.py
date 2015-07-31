@@ -106,8 +106,8 @@ class DisplayGame(Display):
         
     def draw(self): 
         screen.blit(self.bg, [0,0])
-        screen.blit(self.block1, [50,50])
-        screen.blit(self.block2, [550,50])
+        screen.blit(self.block1, [50,34])
+        screen.blit(self.block2, [550,34])
         screen.blit(self.block3, [575,100])
         screen.blit(self.next_text, [605,60])
         screen.blit(self.score_text, [588,375])
