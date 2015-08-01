@@ -12,6 +12,7 @@ def menu_key_repeat():
     
 def game_key_repeat():
     pygame.key.set_repeat(180, 30)
+    
 def check_events():
     for event in pygame.event.get(): # User did something
         
@@ -25,7 +26,8 @@ def check_events():
             
         elif event.type == 25:
             current_display.timer_event()
-            
+        elif event.type == 26:
+            current_display.speaker_event()
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
                 current_display.key_left()
@@ -52,11 +54,11 @@ def check_events():
 # Used to manage how fast the screen updates
 clock = pygame.time.Clock()
 pygame.mouse.set_visible(False)
-display.update_music()
 display_game = display.DisplayGame()
 display_main = display.DisplayMain(display_game)
 display_score = display.DisplayScore()
 current_display = display_main
+current_display.update_music()
 menu_key_repeat()
 # -------- Main Program Loop -----------
 
@@ -66,19 +68,21 @@ while not done:
     
     if display.screen_no == constants.MAIN and current_display != display_main :
         if current_display != display_score :
-            display.update_music()
-        current_display = display_main
-        menu_key_repeat()
+            current_display = display_main
+            current_display.update_music()
+            menu_key_repeat()
+        else :
+            current_display = display_main
         
     elif display.screen_no == constants.NEW and current_display != display_game:
         display_game.new_game()
         current_display = display_game
-        display.update_music()
+        current_display.update_music()
         game_key_repeat()
         
     elif display.screen_no == constants.CONTINUE and current_display != display_game :
         current_display = display_game
-        display.update_music()
+        current_display.update_music()
         game_key_repeat()
         
     if display.screen_no == constants.SCORE and current_display != display_score :

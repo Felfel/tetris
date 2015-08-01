@@ -13,10 +13,6 @@ pygame.display.set_caption("Cool Game")
 screen = pygame.display.set_mode(size)
 screen_no = constants.MAIN
 PI = 3.141592653
-
-def update_music():
-    pygame.mixer.music.load(constants.MUSIC_LIST[screen_no])
-    pygame.mixer.music.play(-1)
     
 class Display():
     cursor = constants.load_image("cursor1.png")
@@ -33,6 +29,8 @@ class Display():
     def key_esc(self): pass
     def timer_event(self):pass
     def p_key(self): pass
+    def speaker_event(self): pass
+    def update_music(self): pass
 
 class DisplayMain(Display):
     def __init__(self, game): 
@@ -40,7 +38,7 @@ class DisplayMain(Display):
         self.bg_list = [constants.load_image("main_bg1.jpg").convert(), constants.load_image("main_bg2.jpg").convert(), constants.load_image("main_bg3.jpg").convert()]
         self.bg_no = 0
         self.bg = self.bg_list[0]
-        #self.snow = models.Snow(screen, screen_x_size, screen_y_size)
+        self.speaker = models.Speaker(screen, 700, 20, constants.MUSIC_LIST[constants.MAIN])
         new_key = models.MenuItem("newgame_text.png", True, (295,209), (275, 185) )
         con_key = models.MenuItem("continue_text.png", False, (300,305), (275, 280), True )
         high_score = models.MenuItem("high_score_text.png", False, (295,398), (275, 375) )
@@ -54,6 +52,8 @@ class DisplayMain(Display):
     def left_mousebtn(self):
         if self.menu.check_mouse(self.mouse_pos):
             self.key_enter()
+        else :
+            self.speaker.check_mouse(self.mouse_pos)
             
     def key_down(self):
         self.menu.key_down()
@@ -67,7 +67,7 @@ class DisplayMain(Display):
         
     def draw(self):
         screen.blit(self.bg, [0,0]) 
-        
+        self.speaker.draw()
         self.menu.draw()
         screen.blit(self.title, (227,15))
         # Draw Mouse Cursor         
@@ -88,9 +88,16 @@ class DisplayMain(Display):
         self.bg = self.bg_list[self.bg_no]
         pygame.time.set_timer(25, 300)
   
+    def speaker_event(self):
+        self.speaker.timer()
+    
+    def update_music(self):
+        self.speaker.update_music()
+        
 class DisplayGame(Display):
     def __init__(self):
               
+        self.speaker = models.Speaker(screen, 615, 290, constants.MUSIC_LIST[constants.NEW])
         self.bg = constants.load_image("game_bg.jpg").convert()
         self.block1 = constants.load_image("block1.png")
         self.block2 = constants.load_image("block2.png")
@@ -111,6 +118,7 @@ class DisplayGame(Display):
         screen.blit(self.block3, [575,100])
         screen.blit(self.next_text, [605,60])
         screen.blit(self.score_text, [588,375])
+        self.speaker.draw()
         self.block_controler.draw(screen)
         screen.blit(self.cursor, (self.mouse_pos[0], self.mouse_pos[1]))
         if self.status == constants.PUASED : screen.blit(self.puase_img, [0,0])
@@ -178,7 +186,13 @@ class DisplayGame(Display):
                 self.status = constants.PLAYING
     def get_status(self):
         return self.status
-    
+    def speaker_event(self):
+        self.speaker.timer()
+    def update_music(self):
+        self.speaker.update_music()    
+    def left_mousebtn(self):
+        self.speaker.check_mouse(self.mouse_pos)    
+        
 class DisplayScore(DisplayMain):
     def __init__(self):
         self.bg_list = [constants.load_image("main_bg1.jpg").convert(), constants.load_image("main_bg2.jpg").convert(), constants.load_image("main_bg3.jpg").convert()]
@@ -215,4 +229,12 @@ class DisplayScore(DisplayMain):
                     
     def key_enter(self):
         global screen_no
-        screen_no = constants.MAIN    
+        screen_no = constants.MAIN   
+    def left_mousebtn(self):
+        if self.menu.check_mouse(self.mouse_pos):
+            self.key_enter()    
+    def speaker_event(self):
+        pass
+    
+    def update_music(self):
+        pass

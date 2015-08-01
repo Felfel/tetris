@@ -2,6 +2,8 @@ import pygame
 import random
 import constants
 import math
+import shelve
+import dbm.dumb
 
 pygame.init()
 pygame.display.set_mode([800,600])
@@ -688,6 +690,75 @@ class MenuItem():
         return (x >= pos[0] and x <= pos[0] + size[0] and 
                   y >= pos[1] and y <= pos[1] + size[1])
 #------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------
+class Speaker():
+    active = [constants.load_image("speaker1.png"), constants.load_image("speaker2.png")]
+    mute = constants.load_image("speaker3.png")
+    def __init__(self, screen, x, y, music):
+        self.screen = screen
+        self.x_pos = x
+        self.y_pos = y
+        self.music = music
+        
+        d = shelve.open('info')
+        try:
+            self.playing = d['sound']
+        except:
+            self.playing = True
+        d.close()
+        self.img_no = 0
+        if self.playing:
+            self.img = Speaker.active[0]
+            #self.update_music()
+            pygame.time.set_timer(26, 500)
+        else:
+            self.img = Speaker.mute
+
+    def draw(self):
+        self.screen.blit(self.img, (self.x_pos,self.y_pos))
+    
+    def logic(self):
+        pass
+    
+    def check_mouse(self, pos):
+        x, y = pos
+        x2, y2 = Speaker.mute.get_rect().size
+        con1 = x > self.x_pos
+        con2 = x <= self.x_pos + x2
+        con3 = y > self.y_pos
+        con4 = y <= self.y_pos + y2
+        if con1 and con2 and con3 and con4 :
+            self.click()
+        
+    
+    def update_music(self):
+        d = shelve.open('info')
+        try:
+            self.playing = d['sound']
+        except:
+            pass
+        d.close()        
+        if self.playing:
+            self.img = Speaker.active[0]
+            pygame.mixer.music.load(self.music)
+            pygame.mixer.music.play(-1) 
+            pygame.time.set_timer(26, 500)            
+        else:
+            self.img = Speaker.mute
+            pygame.mixer.music.stop()    
+            
+    def click(self):
+        self.playing = not self.playing
+        d = shelve.open('info')
+        d['sound'] = self.playing
+        d.close()        
+        self.update_music()
+        
+    def timer(self):
+        if self.playing:
+            self.img_no = (self.img_no + 1) % 2
+            self.img = Speaker.active[self.img_no]
+            pygame.time.set_timer(26, 500)
 #------------------------------------------------------------------------------------
 # Unused
 class Snow():
