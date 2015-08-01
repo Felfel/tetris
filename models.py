@@ -440,7 +440,6 @@ class BlockControler():
         while not self.check(self.moving_object.get_list()):
             for b in self.moving_object.get_list():
                 y = (b.get_y() - y_low_limit) // 22
-                print(y)
                 if y < 0:
                     self.lost = True
             if self.lost : 
@@ -532,16 +531,16 @@ class BlockControler():
     # Cuased by right arrow key
     def move_right(self):
         mlist = self.moving_object.get_list()
-        for b in mlist:
-            b1_loc = b.get_y() // 22
-            b1_new = b.get_x() + x_s 
-            if b1_new == x_upr_limit:
+        mlist = self.moving_object.get_list()
+        for b in mlist :
+            x = (b.get_x() - x_low_limit) / 22
+            y = (b.get_y() - y_low_limit) / 22
+            x, y = math.ceil(x), math.ceil(y)
+            x += 1
+            if x < 0 or x > 19:
                 return
-            else:
-                for b2 in self.stop_list:
-                    b2_loc = b2.get_y() // 22  
-                    if b1_loc == b2_loc and b1_new == b2.get_x():
-                        return
+            elif self.grid[y][x] == 1:
+                return
         self.moving_object.move_right()
     
     # Tell the object to move left if it's legal, do nothing otherwise   
@@ -549,15 +548,14 @@ class BlockControler():
     def move_left(self):
         mlist = self.moving_object.get_list()
         for b in mlist :
-            b1_loc = b.get_y() // 22
-            b1_new = b.get_x() - x_s
-            if b.get_x() == x_low_limit:
+            x = (b.get_x() - x_low_limit) / 22
+            y = (b.get_y() - y_low_limit) / 22
+            x, y = math.ceil(x), math.ceil(y)
+            x -= 1
+            if x < 0 or x > 19:
                 return
-            else:
-                for b2 in self.stop_list:
-                    b2_loc = b2.get_y() // 22 
-                    if b1_loc == b2_loc and b1_new == b2.get_x():
-                        return 
+            elif self.grid[y][x] == 1:
+                return
         self.moving_object.move_left()
         
     # Cuased by down arrow key, speed up the object
