@@ -1,6 +1,7 @@
 import pygame
 import random
 import constants
+import math
 
 pygame.init()
 pygame.display.set_mode([800,600])
@@ -145,7 +146,7 @@ class BlockObject():
         self.special = (self.rtype == 5)
           
     # Functions to add 'I' Blocks and it's vartiations
-    def add_i_v1(self, x= x_midpoint, y= y_low_limit): 
+    def add_i_v1(self, x= x_midpoint, y= y_low_limit - y_s): 
         blocks = [0,0,0,0]
         for i in range(4):
             blocks[i] = Block( x, y -(i*y_s) , BlockObject.i_block1, speed)
@@ -157,25 +158,25 @@ class BlockObject():
         return blocks      
     
     # Functions to add 'J' Blocks and it's vartiations
-    def add_j_v1(self, x = x_midpoint - x_s, y = y_low_limit): 
+    def add_j_v1(self, x = x_midpoint - x_s, y = y_low_limit - y_s): 
         blocks = [0,0,0,0]
         blocks[0] = Block( x , y, BlockObject.j_block1, speed)
         for i in range(3):
             blocks[i+1] = Block( x + x_s , y-(i*y_s), BlockObject.j_block1, speed)
         return blocks
-    def add_j_v2(self, x = x_midpoint - x_s, y = y_low_limit): 
+    def add_j_v2(self, x = x_midpoint - x_s, y = y_low_limit - y_s): 
         blocks = [0,0,0,0]
         for i in range(3):
             blocks[i] = Block( x + (i* x_s) , y, BlockObject.j_block1, speed)
         blocks[3] = Block( x , y - y_s, BlockObject.j_block1, speed)
         return blocks    
-    def add_j_v3(self, x = x_midpoint - x_s, y = y_low_limit): 
+    def add_j_v3(self, x = x_midpoint - x_s, y = y_low_limit - y_s): 
         blocks = [0,0,0,0]
         for i in range(3):
             blocks[i] = Block( x , y-(i*y_s), BlockObject.j_block1, speed)
         blocks[3] = Block( x + x_s , y - 2 * y_s, BlockObject.j_block1, speed)
         return blocks
-    def add_j_v4(self, x = x_midpoint - x_s, y = y_low_limit): 
+    def add_j_v4(self, x = x_midpoint - x_s, y = y_low_limit - y_s): 
         blocks = [0,0,0,0]
         for i in range(3):
             blocks[i+1] = Block( x - (i* x_s) , y, BlockObject.j_block1, speed)
@@ -183,7 +184,7 @@ class BlockObject():
         return blocks             
 
     # Functions to add 'O' Blocks and no variations OBVIOUSLY
-    def add_o(self, x = x_midpoint , y = y_low_limit): 
+    def add_o(self, x = x_midpoint , y = y_low_limit - y_s): 
         blocks = [0,0,0,0]
         blocks[0] = Block( x , y, BlockObject.o_block1, speed)
         blocks[1] = Block( x - x_s , y, BlockObject.o_block1, speed)
@@ -192,14 +193,14 @@ class BlockObject():
         return blocks     
     
     # Functions to add 'Z' Blocks and it's vartiations    
-    def add_z_v1(self, x = x_midpoint , y = y_low_limit): 
+    def add_z_v1(self, x = x_midpoint , y = y_low_limit - y_s): 
         blocks = [0,0,0,0]
         blocks[0] = Block( x + x_s , y, BlockObject.z_block1, speed)
         blocks[1] = Block( x , y, BlockObject.z_block1, speed)
         blocks[2] = Block( x , y - y_s, BlockObject.z_block1, speed) 
         blocks[3] = Block( x - x_s, y - y_s, BlockObject.z_block1, speed) 
         return blocks 
-    def add_z_v2(self, x = x_midpoint , y = y_low_limit): 
+    def add_z_v2(self, x = x_midpoint , y = y_low_limit - y_s): 
         blocks = [0,0,0,0]
         blocks[0] = Block( x , y, BlockObject.z_block1, speed)
         blocks[1] = Block( x , y - y_s, BlockObject.z_block1, speed)
@@ -208,28 +209,28 @@ class BlockObject():
         return blocks    
     
     # Functions to add 'T' Blocks and it's vartiations
-    def add_t_v1(self, x = x_midpoint , y = y_low_limit): 
+    def add_t_v1(self, x = x_midpoint , y = y_low_limit - y_s): 
         blocks = [0,0,0,0]
         blocks[0] = Block( x , y, BlockObject.t_block1, speed)
         blocks[1] = Block( x , y - y_s, BlockObject.t_block1, speed)
         blocks[2] = Block( x - x_s, y - y_s, BlockObject.t_block1, speed) 
         blocks[3] = Block( x + x_s, y - y_s, BlockObject.t_block1, speed) 
         return blocks   
-    def add_t_v2(self, x = x_midpoint , y = y_low_limit): 
+    def add_t_v2(self, x = x_midpoint , y = y_low_limit - y_s): 
         blocks = [0,0,0,0]
         blocks[0] = Block( x , y, BlockObject.t_block1, speed)
         blocks[1] = Block( x , y - y_s, BlockObject.t_block1, speed)
         blocks[2] = Block( x , y - 2*y_s, BlockObject.t_block1, speed) 
         blocks[3] = Block( x - x_s, y - y_s, BlockObject.t_block1, speed) 
         return blocks     
-    def add_t_v3(self, x = x_midpoint , y = y_low_limit): 
+    def add_t_v3(self, x = x_midpoint , y = y_low_limit - y_s): 
         blocks = [0,0,0,0]
         blocks[0] = Block( x , y, BlockObject.t_block1, speed)
         blocks[1] = Block( x + x_s, y, BlockObject.t_block1, speed)
         blocks[2] = Block( x - x_s, y, BlockObject.t_block1, speed) 
         blocks[3] = Block( x , y - y_s, BlockObject.t_block1, speed) 
         return blocks     
-    def add_t_v4(self, x = x_midpoint , y = y_low_limit): 
+    def add_t_v4(self, x = x_midpoint , y = y_low_limit - y_s): 
         blocks = [0,0,0,0]
         blocks[0] = Block( x , y, BlockObject.t_block1, speed)
         blocks[1] = Block( x , y - y_s, BlockObject.t_block1, speed)
@@ -247,10 +248,14 @@ class BlockObject():
     
     # Stop the object, 
     #if it had already crossed a line bring it back and STOP IT
-    def stop(self, n):
+    def stop(self):
         for b in self.moving_list :
-            b.trans_y(n * -1)
             b.stop()
+            
+    def transfer(self, x, y):
+        for b in self.moving_list:
+            b.trans_y(y)
+            b.trans_x(x)
             
     # Blit an image of the next coming object in the 'Next' Area        
     def draw_next(self, screen):
@@ -345,7 +350,6 @@ class BlockObject():
 # After objects are stopped, they are treated as blocks instead of objects
 # Also maintain score and such
 class BlockControler():
-    
     def __init__(self, block_list = []):
         self.score = 0
         self.add_score = 0
@@ -355,6 +359,7 @@ class BlockControler():
         self.moving_object = BlockObject()
         self.animate = 0
         self.lost = False
+        self.grid = [[0 for x in range(20)] for x in range(23)] 
         
     # Tell Block object to move his ass and create a new one    
     def new_object(self):
@@ -372,25 +377,37 @@ class BlockControler():
             self.score += self.add_score
             self.add_score = 0 
             self.to_remove_list = []
+            self.update_grid()
             self.moving_object.update()
             self.check_collision()
-    
+    # 55 , 39
+    def update_grid(self):
+        self.grid = [[0 for x in range(20)] for x in range(23)]
+        for b in self.stop_list:
+            x = (b.get_x() - x_low_limit) // 22
+            y = (b.get_y() - y_low_limit) // 22
+            print((x,y))
+            self.grid[y][x] = 1
+        #print("-------------------------------------------------------")
+        #for line in self.grid:
+            #print(line)
+        #print("-------------------------------------------------------")
+        
     # Take a list of blocks and check for collisions with 
     # other blocks, or lines
     def check(self,l):
         for b in l:
-            # Horizontal line
-            b1_loc = b.get_y() // 22
+            x = (b.get_x() - x_low_limit) // 22
+            y = (b.get_y() - y_low_limit) // 22
             # X limits
-            con2 = b.get_x() < x_upr_limit
-            con3 = b.get_x() >= x_low_limit
-            if con2 and con3 :
-                for b2 in self.stop_list :
-                    b2_loc = b2.get_y() // 22
-                    con = b.get_x() == b2.get_x()
-                    # In the same exact zone?
-                    if b1_loc == b2_loc and con : 
-                        return False
+            con2 = x >= 0
+            con3 = x < 20
+            con4 = y < 23
+            con5 = y >= 0
+            print(str(con2)+" "+str(con3)+" "+str(con4)+" "+str(con5))
+            if con2 and con3 and con4 and con5:
+                if self.grid[y][x] == 1: 
+                    return False
             else :
                 return False
         return True
@@ -400,36 +417,49 @@ class BlockControler():
     def check_collision(self):
         mlist = self.moving_object.get_list()
         for b in mlist : 
+            x = (b.get_x() - x_low_limit) / 22
+            y = (b.get_y() - y_low_limit) / 22
+            x, y = math.ceil(x), math.ceil(y)
             # Y upper limit
-            if b.get_y() + y_s > y_upr_limit :
-                self.stop(b.get_y()+y_s-y_upr_limit)
+            if y > 22:
+                self.stop()
                 return
             # Other blocks Y collision
-            b1_loc = b.get_y() // 22
-            for b2 in self.stop_list :
-                b2_loc = b2.get_y() // 22 
-                ##con1 = b.get_y() >= b2.get_y() and b.get_y() <= b2.get_y() + y_s
-                ##con2 = b.get_y() + y_s >= b2.get_y() and b.get_y()  <= b2.get_y() 
-                con3 = b.get_x() == b2.get_x()
-                if b1_loc == b2_loc and con3:
-                ##if (con1 or con2) and con3:
-                    self.stop(b.get_y()+y_s - b2.get_y())
-                    return            
+            if y >= 0 and self.grid[y][x] == 1:
+                self.stop()
+                return            
      
     # In case of collision, stop the object, check for score, create a new object
     # Routine of the logical updating, if there is collision
-    def stop(self, n):
-        self.moving_object.stop(n)
+    def stop(self):
         mlist = self.moving_object.get_list()
-        drawable_list = [x for x in mlist if x.drawable()]
-        if not self.moving_object.special and len(drawable_list) < 4 :
-            self.lost = True
-        self.stop_list += drawable_list
-        self.new_object()
-        if len(mlist) < 4:
-            self.special_score(mlist[0].get_x(), mlist[0].get_y())
+        y = (mlist[0].get_y() - y_low_limit) // 22
+        y = y * 22 + y_low_limit
+        self.moving_object.transfer(0, y - mlist[0].get_y())
+        
+        while not self.check(self.moving_object.get_list()):
+            for b in self.moving_object.get_list():
+                y = (b.get_y() - y_low_limit) // 22
+                print(y)
+                if y < 0:
+                    self.lost = True
+            if self.lost : 
+                break
+            self.moving_object.transfer(0, -22)
+        self.moving_object.stop()
+        drawable_list = [x for x in self.moving_object.get_list() if x.drawable()]
+        if not self.lost:
+            self.stop_list += drawable_list
+            self.new_object()        
         else:
-            self.calculate_score()
+            add_list = []
+            for b in drawable_list:
+                x = (b.get_x() - x_low_limit) // 22
+                y = (b.get_y() - y_low_limit) // 22
+                if self.grid[y][x] == 0:
+                    add_list.append(b)
+            self.stop_list += add_list
+        
     
     # Calculate score for a special block
     def special_score(self,x,y):
@@ -478,9 +508,12 @@ class BlockControler():
         # List of stopped blocks, and any moving block in the game area
         # ** Moving blocks are spawned above the game area, if they haven't 
         # ** entered yet, they are not drawn
-        b_list = (self.stop_list 
-                  + [ x for x in self.moving_object.get_list() if x.drawable()])
-        for b in b_list:
+        for b in self.stop_list:
+            b.draw(screen)
+        mlist = []
+        if not self.lost :
+            mlist = [ x for x in self.moving_object.get_list() if x.drawable()]
+        for b in mlist:
             b.draw(screen)
         font = constants.load_font("LithosPro", 27)    
         label = font.render(str(self.score), 1, constants.LIGHT_BLUE)
