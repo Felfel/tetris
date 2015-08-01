@@ -12,6 +12,7 @@ x_upr_limit = 495
 y_low_limit = 39
 y_upr_limit = 545
 x_midpoint = x_low_limit + (10*x_s)
+start_speed = 2
 speed = 2
 
 def prepare_alpha(source,  opacity):
@@ -380,7 +381,14 @@ class BlockControler():
             self.update_grid()
             self.moving_object.update()
             self.check_collision()
-    # 55 , 39
+            self.update_speed()
+            
+            
+    def update_speed(self):
+        global speed
+        speed = start_speed + self.score // 4000
+        if speed > 5 : speed = 5
+        
     def update_grid(self):
         self.grid = [[0 for x in range(20)] for x in range(23)]
         for b in self.stop_list:
