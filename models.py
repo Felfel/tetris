@@ -129,7 +129,7 @@ class BlockObject():
     # gets a new random object
     def new_object(self):
         # Spawn a special block object with 1/2o chance
-        if random.randint(0,20) == 20:
+        if random.randint(0,2) == 2:
             self.rtype = self.ntype
             self.ntype = 5
             self.variation = 0
@@ -269,7 +269,7 @@ class BlockObject():
     # Makes the object move faster
     def move_down(self):
             for b in self.moving_list:
-                b.update_speed(10)  
+                b.update_speed(speed*5)  
                 
     # Cuased by releasing the down arrow key
     # Makes the objects move at it's own pace, peacefully
@@ -388,10 +388,6 @@ class BlockControler():
             y = (b.get_y() - y_low_limit) // 22
             print((x,y))
             self.grid[y][x] = 1
-        #print("-------------------------------------------------------")
-        #for line in self.grid:
-            #print(line)
-        #print("-------------------------------------------------------")
         
     # Take a list of blocks and check for collisions with 
     # other blocks, or lines
@@ -449,7 +445,11 @@ class BlockControler():
         drawable_list = [x for x in self.moving_object.get_list() if x.drawable()]
         if not self.lost:
             self.stop_list += drawable_list
-            self.new_object()        
+            if self.moving_object.special :
+                self.special_score()
+            else:
+                self.calculate_score()
+            self.new_object()   
         else:
             add_list = []
             for b in drawable_list:
@@ -461,30 +461,31 @@ class BlockControler():
         
     
     # Calculate score for a special block
-    def special_score(self,x,y):
+    def special_score(self):
         # The line the special block has landed in
-        line = y // 22
+        b = self.moving_object.get_list()[0]
+        line = (b.get_y() - y_low_limit) // 22
         # Number of blocks in this line
-        self.to_remove_list = [x for x in self.stop_list if x.get_y()//22 == line]
+        self.to_remove_list = [x for x in self.stop_list if (x.get_y() - y_low_limit) // 22 == line]
         multiplier = len(self.to_remove_list)
         # 25 Score per block 
         self.add_score+= 25*multiplier
         # Delete the blocks in the line
-        self.stop_list = [x for x in self.stop_list if x.get_y()//22 != line]
+        self.stop_list = [x for x in self.stop_list if (x.get_y() - y_low_limit) // 22 != line]
         # Shift down upper lines of blocks
-        for b in self.stop_list:
-            if b.get_y()//22 < line:
-                b.trans_y(y_s)            
+        for bl in self.stop_list:
+            if (bl.get_y() - y_low_limit) // 22 < line:
+                bl.trans_y(y_s)            
         if len(self.to_remove_list) > 0 : self.animate = 15
      
     # Calculate score for regular blocks       
     def calculate_score(self):
-        arr = [0] * 24
+        arr = [0] * 23
         # Get number of blocks in each horizontal line
         for b in self.stop_list:
-            arr[b.get_y()//22] += 1
+            arr[(b.get_y() - y_low_limit) // 22] += 1
         index = []
-        for i in range(3,24) :
+        for i in range(23) :
             if arr[i] == 20:
                 self.add_score += 400
                 # append the index of a completed line
@@ -492,11 +493,11 @@ class BlockControler():
           
         # Delete a line if it's complete      
         for i in index :
-            self.to_remove_list += [x for x in self.stop_list if x.get_y()//22 == i]
-            self.stop_list = [x for x in self.stop_list if x.get_y()//22 != i]
+            self.to_remove_list += [x for x in self.stop_list if (x.get_y() - y_low_limit) // 22 == i]
+            self.stop_list = [x for x in self.stop_list if (x.get_y() - y_low_limit) // 22 != i]
             # Move all upper remaining lines down
             for b in self.stop_list:
-                if b.get_y()//22 < i:
+                if (b.get_y() - y_low_limit) // 22 < i:
                     b.trans_y(y_s)    
         # Got blocks to remove? raise the animation flag           
         if len(self.to_remove_list) > 0 : self.animate = 15

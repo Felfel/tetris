@@ -7,7 +7,11 @@ pygame.init()
 
 done = False
 
-# 650 , 150
+def menu_key_repeat():
+    pygame.key.set_repeat(300, 100)
+    
+def game_key_repeat():
+    pygame.key.set_repeat(180, 30)
 def check_events():
     for event in pygame.event.get(): # User did something
         
@@ -53,7 +57,7 @@ display_game = display.DisplayGame()
 display_main = display.DisplayMain(display_game)
 display_score = display.DisplayScore()
 current_display = display_main
-pygame.key.set_repeat(200, 70)
+menu_key_repeat()
 # -------- Main Program Loop -----------
 
 while not done:
@@ -64,16 +68,19 @@ while not done:
         if current_display != display_score :
             display.update_music()
         current_display = display_main
+        menu_key_repeat()
         
     elif display.screen_no == constants.NEW and current_display != display_game:
         display_game.new_game()
         current_display = display_game
         display.update_music()
+        game_key_repeat()
         
     elif display.screen_no == constants.CONTINUE and current_display != display_game :
         current_display = display_game
         display.update_music()
-    
+        game_key_repeat()
+        
     if display.screen_no == constants.SCORE and current_display != display_score :
             current_display = display_score
         
