@@ -365,6 +365,7 @@ class BlockControler():
         self.animate = 0
         self.lost = False
         self.grid = [[0 for x in range(20)] for x in range(23)] 
+        self.c1 = 0
         
     # Tell Block object to move his ass and create a new one    
     def new_object(self):
@@ -374,6 +375,8 @@ class BlockControler():
     def initiate(self):
         self.new_object()
         self.new_object()
+        self.c1 = 0
+        self.c2 = 0        
     
     # Update positions, scores, check for collisions
     # If an animation is going on, hold back the updates
@@ -485,8 +488,9 @@ class BlockControler():
         # Shift down upper lines of blocks
         for bl in self.stop_list:
             if (bl.get_y() - y_low_limit) // 22 < line:
-                bl.trans_y(y_s)            
-        if len(self.to_remove_list) > 0 : self.animate = 15
+                bl.trans_y(y_s)          
+        c = len(self.to_remove_list)
+        if c > 0 : self.animate = 15; self.c1 += c
      
     # Calculate score for regular blocks       
     def calculate_score(self):
@@ -509,8 +513,9 @@ class BlockControler():
             for b in self.stop_list:
                 if (b.get_y() - y_low_limit) // 22 < i:
                     b.trans_y(y_s)    
-        # Got blocks to remove? raise the animation flag           
-        if len(self.to_remove_list) > 0 : self.animate = 15
+        # Got blocks to remove? raise the animation flag 
+        c = len(self.to_remove_list)
+        if c > 0 : self.animate = 15; self.c2 += c
     
     # Main draw function, draw blocks(actually tell them to draw themselves), animation
     def draw(self,screen):
@@ -772,21 +777,34 @@ class Gj():
         self.x_btn = x-30
         self.y_btn = y+70
         self.font = constants.load_font("LithosPro", 20)
-        self.text = self.font.render("Offline", 1, constants.BLACK)
-        self.x_t = self.x_btn+60-self.text.get_rect().size[0]/2
         self.y_t = self.y_btn+10
-        self.btn = Gj.btn
+        d = shelve.open('info')
+        try :
+            self.user, self.token = d['user'] 
+        except:
+            self.user, self.token = ('','')
+        d.close()
+        self.api = gjapi.GameJoltTrophy(self.user, self.token, constants.GAME_ID, constants.PRIVATE_KEY)
+        if self.api.authenticateUser():
+            self.logged = True
+            self.api.openSession()
+            self.btn =  Gj.btnh
+            self.text = self.font.render(self.user, 1, constants.BLACK) 
+            pygame.time.set_timer(27, 59000)            
+        else:
+            self.logged = False
+            self.btn = Gj.btn
+            self.text = self.font.render("Offline", 1, constants.BLACK)
         self.opened = False
-        self.logged = False
         options = {'x':150, 'y':200, 'font':self.font, 'color':constants.DLIGHT_BLUE,
                    'maxlength':25, 'prompt1':"Username:  ", 'prompt2':"Token:  "}
         self.txtbx = eztext.Input(**options)
         self.tip1 = self.font.render("- Tab to switch between text boxes", 1, constants.OFF_WHITE)
         self.tip2 = self.font.render("- Enter to login", 1, constants.OFF_WHITE)
         self.tip3 = self.font.render("- Esc to go back", 1, constants.OFF_WHITE)
-        self.api = gjapi.GameJoltTrophy("","","83004","d4645cd6102bacae8bdba96d11db527f")
         
     def draw(self):
+        self.x_t = self.x_btn+60-self.text.get_rect().size[0]/2
         self.screen.blit(Gj.logo, (self.x_logo,self.y_logo))
         self.screen.blit(self.btn, (self.x_btn, self.y_btn))
         self.screen.blit(self.text, (self.x_t, self.y_t ))
@@ -806,12 +824,15 @@ class Gj():
         self.api.changeUsername(self.user)
         self.api.changeUserToken(self.token)
         if self.api.authenticateUser():
+            d = shelve.open('info')
+            d['user'] = (self.user, self.token)
+            d.close()
             self.api.openSession()
             self.logged = True
             self.opened = False
             self.btn =  Gj.btnh
             self.text = self.font.render(self.user, 1, constants.BLACK) 
-            pygame.time.set_timer(27, 15000)
+            pygame.time.set_timer(27, 59000)
         
     def check_mouse(self, pos):
         x, y = pos
@@ -826,6 +847,9 @@ class Gj():
     def click(self):
         if self.logged:
             self.logged = False
+            d = shelve.open('info')
+            d['user'] = ('', '')
+            d.close()            
             self.btn =  Gj.btn
             self.text = self.font.render("Offline", 1, constants.BLACK)            
         else:

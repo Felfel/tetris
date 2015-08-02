@@ -57,6 +57,7 @@ display_game = display.DisplayGame()
 display_main = display.DisplayMain(display_game)
 display_score = display.DisplayScore()
 current_display = display_main
+display_game.set_api(display_main.gamejolt.api)
 current_display.update_music()
 menu_key_repeat()
 # -------- Main Program Loop -----------

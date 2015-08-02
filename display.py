@@ -109,7 +109,7 @@ class DisplayMain(Display):
     def ping(self):
         if self.gamejolt.logged:
             self.gamejolt.api.pingSession()
-            pygame.time.set_timer(27, 15000)
+            pygame.time.set_timer(27, 59000)
             
 class DisplayGame(Display):
     def __init__(self):
@@ -149,10 +149,15 @@ class DisplayGame(Display):
             if self.block_controler.game_done() :
                 self.status = constants.LOST
                 self.save_score()
-                
+     
+    def set_api(self, api):
+        self.api = api
+        
     def save_score(self):
-        d = shelve.open('info')
         score = self.block_controler.get_score()
+        ex = constants.extra(self.block_controler.c1, self.block_controler.c2)
+        if self.api.authenticateUser(): self.api.addScores(score, score, constants.TABLE_ID, extra_data=ex)
+        d = shelve.open('info')
         try:
             info = d['info']
         except:
