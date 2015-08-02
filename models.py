@@ -5,6 +5,7 @@ import math
 import shelve
 import dbm.dumb
 import eztext
+import gjapi
 
 pygame.init()
 pygame.display.set_mode([800,600])
@@ -777,12 +778,13 @@ class Gj():
         self.btn = Gj.btn
         self.opened = False
         self.logged = False
-        options = {'x':150, 'y':200, 'font':self.font, 'color':constants.LIGHT_BLUE,
+        options = {'x':150, 'y':200, 'font':self.font, 'color':constants.DLIGHT_BLUE,
                    'maxlength':25, 'prompt1':"Username:  ", 'prompt2':"Token:  "}
         self.txtbx = eztext.Input(**options)
         self.tip1 = self.font.render("- Tab to switch between text boxes", 1, constants.OFF_WHITE)
         self.tip2 = self.font.render("- Enter to login", 1, constants.OFF_WHITE)
         self.tip3 = self.font.render("- Esc to go back", 1, constants.OFF_WHITE)
+        self.api = gjapi.GameJoltTrophy("","","83004","d4645cd6102bacae8bdba96d11db527f")
         
     def draw(self):
         self.screen.blit(Gj.logo, (self.x_logo,self.y_logo))
@@ -800,7 +802,17 @@ class Gj():
         self.txtbx.update(events) 
     
     def login(self):
-        pass
+        self.user, self.token = self.txtbx.get_text()
+        self.api.changeUsername(self.user)
+        self.api.changeUserToken(self.token)
+        if self.api.authenticateUser():
+            self.api.openSession()
+            self.logged = True
+            self.opened = False
+            self.btn =  Gj.btnh
+            self.text = self.font.render(self.user, 1, constants.BLACK) 
+            pygame.time.set_timer(27, 15000)
+        
     def check_mouse(self, pos):
         x, y = pos
         x2, y2 = Gj.btn.get_rect().size
@@ -812,7 +824,11 @@ class Gj():
             self.click()  
             
     def click(self):
-        if not self.logged:
+        if self.logged:
+            self.logged = False
+            self.btn =  Gj.btn
+            self.text = self.font.render("Offline", 1, constants.BLACK)            
+        else:
             self.opened = True
 #------------------------------------------------------------------------------------
 # Unused

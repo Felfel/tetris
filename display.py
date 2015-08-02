@@ -106,6 +106,11 @@ class DisplayMain(Display):
     def key_esc(self):
         if self.gamejolt.opened:
             self.gamejolt.opened = False
+    def ping(self):
+        if self.gamejolt.logged:
+            self.gamejolt.api.pingSession()
+            pygame.time.set_timer(27, 15000)
+            
 class DisplayGame(Display):
     def __init__(self):
               

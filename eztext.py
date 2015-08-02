@@ -52,7 +52,9 @@ class Input:
         text2 = self.font.render(self.prompt2+self.values[1], 1, self.color)
         surface.blit(self.box[(self.no+1)%2], (self.x, self.y+100))
         surface.blit(text2, (self.x+10, self.y+117))        
-        
+    def get_text(self):
+        return((self.values[0],self.values[1]))
+    
     def update(self, events):
         """ Update the input based on passed events """
         for event in events:

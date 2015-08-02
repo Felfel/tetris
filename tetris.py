@@ -20,15 +20,13 @@ def check_events():
         if event.type == pygame.QUIT: # If user clicked close
             global done
             done = True # Flag that we are done so we exit this loop
-        
-        elif event.type == pygame.constants.USEREVENT:
-            # This event is triggered when the song stops playing.
-            pygame.mixer.music.play()   
             
         elif event.type == 25:
             current_display.timer_event()
         elif event.type == 26:
             current_display.speaker_event()
+        elif event.type == 27:
+            display_main.ping()
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
                 current_display.key_left()
