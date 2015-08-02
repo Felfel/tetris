@@ -14,7 +14,8 @@ def game_key_repeat():
     pygame.key.set_repeat(180, 30)
     
 def check_events():
-    for event in pygame.event.get(): # User did something
+    events = pygame.event.get()
+    for event in events: # User did something
         
         if event.type == pygame.QUIT: # If user clicked close
             global done
@@ -49,7 +50,7 @@ def check_events():
                 current_display.key_down_upd()            
         elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
             current_display.left_mousebtn()
-                
+    display.events = events      
 
 # Used to manage how fast the screen updates
 clock = pygame.time.Clock()

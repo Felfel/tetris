@@ -4,6 +4,7 @@ import constants
 import math
 import shelve
 import dbm.dumb
+import eztext
 
 pygame.init()
 pygame.display.set_mode([800,600])
@@ -757,6 +758,62 @@ class Speaker():
             self.img_no = (self.img_no + 1) % 2
             self.img = Speaker.active[self.img_no]
             pygame.time.set_timer(26, 500)
+#------------------------------------------------------------------------------------
+class Gj():
+    logo = constants.load_image("gj_logo.png")
+    btn = constants.load_image("gj_b1.png")
+    btnh = constants.load_image("gj_b2.png")
+    ov = constants.load_image("ov1.png")
+    def __init__(self, screen, x, y):
+        self.screen = screen
+        self.x_logo = x
+        self.y_logo = y
+        self.x_btn = x-30
+        self.y_btn = y+70
+        self.font = constants.load_font("LithosPro", 20)
+        self.text = self.font.render("Offline", 1, constants.BLACK)
+        self.x_t = self.x_btn+60-self.text.get_rect().size[0]/2
+        self.y_t = self.y_btn+10
+        self.btn = Gj.btn
+        self.opened = False
+        self.logged = False
+        options = {'x':150, 'y':200, 'font':self.font, 'color':constants.LIGHT_BLUE,
+                   'maxlength':25, 'prompt1':"Username:  ", 'prompt2':"Token:  "}
+        self.txtbx = eztext.Input(**options)
+        self.tip1 = self.font.render("- Tab to switch between text boxes", 1, constants.OFF_WHITE)
+        self.tip2 = self.font.render("- Enter to login", 1, constants.OFF_WHITE)
+        self.tip3 = self.font.render("- Esc to go back", 1, constants.OFF_WHITE)
+        
+    def draw(self):
+        self.screen.blit(Gj.logo, (self.x_logo,self.y_logo))
+        self.screen.blit(self.btn, (self.x_btn, self.y_btn))
+        self.screen.blit(self.text, (self.x_t, self.y_t ))
+        if self.opened:
+            self.screen.blit(Gj.ov, (0,0)) 
+            self.screen.fill(constants.BLACK, [150,400, 500, 70])
+            self.screen.blit(self.tip1, (160, 405 ))
+            self.screen.blit(self.tip2, (160, 425 ))
+            self.screen.blit(self.tip3, (160, 445 ))
+            self.txtbx.draw(self.screen)
+            
+    def logic(self, events):
+        self.txtbx.update(events) 
+    
+    def login(self):
+        pass
+    def check_mouse(self, pos):
+        x, y = pos
+        x2, y2 = Gj.btn.get_rect().size
+        con1 = x > self.x_btn
+        con2 = x <= self.x_btn + x2
+        con3 = y > self.y_btn
+        con4 = y <= self.y_btn + y2
+        if con1 and con2 and con3 and con4 :
+            self.click()  
+            
+    def click(self):
+        if not self.logged:
+            self.opened = True
 #------------------------------------------------------------------------------------
 # Unused
 class Snow():

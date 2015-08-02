@@ -13,7 +13,7 @@ pygame.display.set_caption("Cool Game")
 screen = pygame.display.set_mode(size)
 screen_no = constants.MAIN
 PI = 3.141592653
-    
+events = [] 
 class Display():
     cursor = constants.load_image("cursor1.png")
     def __init__(self): pass
@@ -39,6 +39,7 @@ class DisplayMain(Display):
         self.bg_no = 0
         self.bg = self.bg_list[0]
         self.speaker = models.Speaker(screen, 700, 20, constants.MUSIC_LIST[constants.MAIN])
+        self.gamejolt = models.Gj(screen, 55, 30)
         new_key = models.MenuItem("newgame_text.png", True, (295,209), (275, 185) )
         con_key = models.MenuItem("continue_text.png", False, (300,305), (275, 280), True )
         high_score = models.MenuItem("high_score_text.png", False, (295,398), (275, 375) )
@@ -50,38 +51,47 @@ class DisplayMain(Display):
         pygame.time.set_timer(25, 500)
         
     def left_mousebtn(self):
-        if self.menu.check_mouse(self.mouse_pos):
-            self.key_enter()
-        else :
-            self.speaker.check_mouse(self.mouse_pos)
+        if not self.gamejolt.opened:
+            if self.menu.check_mouse(self.mouse_pos):
+                self.key_enter()
+            else :
+                self.speaker.check_mouse(self.mouse_pos)
+                self.gamejolt.check_mouse(self.mouse_pos)
             
     def key_down(self):
-        self.menu.key_down()
+        if not self.gamejolt.opened:
+            self.menu.key_down()
         
     def key_up(self):
-        self.menu.key_up()
+        if not self.gamejolt.opened:
+            self.menu.key_up()
         
     def key_enter(self):
-        global screen_no
-        screen_no = self.menu.get_pos()
+        if self.gamejolt.opened:
+            self.gamejolt.login()
+        else:
+            global screen_no
+            screen_no = self.menu.get_pos()
         
     def draw(self):
         screen.blit(self.bg, [0,0]) 
         self.speaker.draw()
         self.menu.draw()
+        self.gamejolt.draw()
         screen.blit(self.title, (227,15))
-        # Draw Mouse Cursor         
         screen.blit(self.cursor, (self.mouse_pos[0], self.mouse_pos[1]) )
 
     def logic(self):
         self.mouse_pos = pygame.mouse.get_pos()
-        self.menu.check_mouse(self.mouse_pos)
-        status = self.game.get_status()
-        if status == constants.PLAYING or status == constants.PUASED:
-            self.menu.item_list[1].enable()
+        if not self.gamejolt.opened:
+            self.menu.check_mouse(self.mouse_pos)
+            status = self.game.get_status()
+            if status == constants.PLAYING or status == constants.PUASED:
+                self.menu.item_list[1].enable()
+            else:
+                self.menu.item_list[1].disable()
         else:
-            self.menu.item_list[1].disable()
-        
+            self.gamejolt.logic(events)
             
     def timer_event(self):
         self.bg_no = (self.bg_no +1) % 3
@@ -93,7 +103,9 @@ class DisplayMain(Display):
     
     def update_music(self):
         self.speaker.update_music()
-        
+    def key_esc(self):
+        if self.gamejolt.opened:
+            self.gamejolt.opened = False
 class DisplayGame(Display):
     def __init__(self):
               
