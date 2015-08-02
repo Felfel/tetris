@@ -232,7 +232,10 @@ class DisplayScore(DisplayMain):
         screen_no = constants.MAIN   
     def left_mousebtn(self):
         if self.menu.check_mouse(self.mouse_pos):
-            self.key_enter()    
+            self.key_enter()   
+            
+    def key_esc(self):
+        self.key_enter()     
     def speaker_event(self):
         pass
     

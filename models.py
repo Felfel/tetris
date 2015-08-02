@@ -132,7 +132,7 @@ class BlockObject():
     # gets a new random object
     def new_object(self):
         # Spawn a special block object with 1/2o chance
-        if random.randint(0,2) == 2:
+        if random.randint(0,20) == 20:
             self.rtype = self.ntype
             self.ntype = 5
             self.variation = 0
@@ -396,7 +396,6 @@ class BlockControler():
         for b in self.stop_list:
             x = (b.get_x() - x_low_limit) // 22
             y = (b.get_y() - y_low_limit) // 22
-            print((x,y))
             self.grid[y][x] = 1
         
     # Take a list of blocks and check for collisions with 
@@ -410,7 +409,6 @@ class BlockControler():
             con3 = x < 20
             con4 = y < 23
             con5 = y >= 0
-            print(str(con2)+" "+str(con3)+" "+str(con4)+" "+str(con5))
             if con2 and con3 and con4 and con5:
                 if self.grid[y][x] == 1: 
                     return False
