@@ -6,6 +6,7 @@ import shelve
 import dbm.dumb
 import eztext
 import gjapi
+import _thread 
 
 pygame.init()
 pygame.display.set_mode([800,600])
@@ -785,16 +786,17 @@ class Gj():
             self.user, self.token = ('','')
         d.close()
         self.api = gjapi.GameJoltTrophy(self.user, self.token, constants.GAME_ID, constants.PRIVATE_KEY)
-        if self.api.authenticateUser():
-            self.logged = True
-            self.api.openSession()
-            self.btn =  Gj.btnh
-            self.text = self.font.render(self.user, 1, constants.BLACK) 
-            pygame.time.set_timer(27, 59000)            
-        else:
-            self.logged = False
-            self.btn = Gj.btn
-            self.text = self.font.render("Offline", 1, constants.BLACK)
+        #if self.api.authenticateUser():
+            #self.logged = True
+            #self.api.openSession()
+            #self.btn =  Gj.btnh
+            #self.text = self.font.render(self.user, 1, constants.BLACK) 
+            #pygame.time.set_timer(27, 35000)            
+        #else:
+        self.logged = False
+        self.btn = Gj.btn
+        self.text = self.font.render("Offline", 1, constants.BLACK)
+        _thread.start_new_thread(self.login, (self.user, self.token))
         self.opened = False
         options = {'x':150, 'y':200, 'font':self.font, 'color':constants.DLIGHT_BLUE,
                    'maxlength':25, 'prompt1':"Username:  ", 'prompt2':"Token:  "}
@@ -819,20 +821,25 @@ class Gj():
     def logic(self, events):
         self.txtbx.update(events) 
     
-    def login(self):
+    def key_enter(self):
         self.user, self.token = self.txtbx.get_text()
-        self.api.changeUsername(self.user)
-        self.api.changeUserToken(self.token)
+        _thread.start_new_thread(self.login, (self.user, self.token))
+        
+    def login(self, user, token):
+        self.api.changeUsername(user)
+        self.api.changeUserToken(token)
         if self.api.authenticateUser():
             d = shelve.open('info')
-            d['user'] = (self.user, self.token)
+            d['user'] = (user, token)
             d.close()
             self.api.openSession()
             self.logged = True
             self.opened = False
             self.btn =  Gj.btnh
             self.text = self.font.render(self.user, 1, constants.BLACK) 
-            pygame.time.set_timer(27, 59000)
+            pygame.time.set_timer(27, 35000)
+        else:
+            pygame.event.post(pygame.event.Event(28))
         
     def check_mouse(self, pos):
         x, y = pos

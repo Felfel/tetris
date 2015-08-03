@@ -5,6 +5,7 @@ import constants
 import models
 import shelve
 import dbm.dumb
+import _thread
 
 screen_x_size = 800
 screen_y_size = 600
@@ -68,7 +69,7 @@ class DisplayMain(Display):
         
     def key_enter(self):
         if self.gamejolt.opened:
-            self.gamejolt.login()
+            self.gamejolt.key_enter()
         else:
             global screen_no
             screen_no = self.menu.get_pos()
@@ -109,7 +110,7 @@ class DisplayMain(Display):
     def ping(self):
         if self.gamejolt.logged:
             self.gamejolt.api.pingSession()
-            pygame.time.set_timer(27, 59000)
+            pygame.time.set_timer(27, 35000)
             
 class DisplayGame(Display):
     def __init__(self):
@@ -152,11 +153,19 @@ class DisplayGame(Display):
      
     def set_api(self, api):
         self.api = api
-        
-    def save_score(self):
+     
+    def submit(self, score, ex, api, id_):
+        if api.authenticateUser(): 
+            api.addScores(score, score, id_, extra_data=ex)
+            if score >= 10000 :
+                api.addAchieved(constants.BRONZE)
+            if score >= 18000 :
+                api.addAchieved(constants.SILVER)  
+                
+    def save_score(self):        
         score = self.block_controler.get_score()
-        ex = constants.extra(self.block_controler.c1, self.block_controler.c2)
-        if self.api.authenticateUser(): self.api.addScores(score, score, constants.TABLE_ID, extra_data=ex)
+        ex = constants.extra(self.block_controler.c1, self.block_controler.c2)        
+        _thread.start_new_thread(self.submit, (score, ex, self.api, constants.TABLE_ID))
         d = shelve.open('info')
         try:
             info = d['info']

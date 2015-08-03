@@ -2,17 +2,18 @@ import display
 import random 
 import pygame
 import constants
+import _thread
 
 pygame.init()
 
 done = False
-
+fail = 0
 def menu_key_repeat():
     pygame.key.set_repeat(300, 100)
     
 def game_key_repeat():
     pygame.key.set_repeat(180, 30)
-    
+
 def check_events():
     events = pygame.event.get()
     for event in events: # User did something
@@ -26,7 +27,10 @@ def check_events():
         elif event.type == 26:
             current_display.speaker_event()
         elif event.type == 27:
-            display_main.ping()
+            _thread.start_new_thread(display_main.ping, ())
+        elif event.type == 28:
+            global fail
+            fail = 50
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
                 current_display.key_left()
@@ -98,7 +102,9 @@ while not done:
     display.screen.fill(constants.OFF_WHITE)
  
     current_display.draw()
-    
+    if fail > 0:
+        display.screen.blit(constants.load_image("failed.png"), (285,550))
+        fail -= 1
     pygame.display.flip()
     
     # --- Limit to 60 frames per second
